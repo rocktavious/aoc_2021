@@ -7,6 +7,11 @@ import (
 	"strconv"
 )
 
+var (
+	Store map[int]int = make(map[int]int)
+	Sums  map[int]int = make(map[int]int)
+)
+
 func readFile(path string) ([]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -30,15 +35,37 @@ func readInputData() []string {
 	return lines
 }
 
-func main() {
-	count := 0
-	store := 0
-	lines := readInputData()
-	for i, line := range lines {
+func tryGetStore(i int) int {
+	if i <= len(Store) {
+		return Store[i]
+	}
+	return 0
+}
+
+func parseData() {
+	for i, line := range readInputData() {
 		value, err := strconv.Atoi(line)
 		if err != nil {
 			panic(err)
 		}
+		Store[i] = value
+	}
+}
+
+func calculateData() {
+	for i := 0; i < len(Store); i++ {
+		if i+2 > len(Store) {
+			return
+		}
+		Sums[i] = tryGetStore(i) + tryGetStore(i+1) + tryGetStore(i+2)
+	}
+}
+
+func calculateAnswer() {
+	count := 0
+	store := 0
+	for i := 0; i < len(Sums); i++ {
+		value := Sums[i]
 		if i == 0 {
 			store = value
 			continue
@@ -49,4 +76,10 @@ func main() {
 		store = value
 	}
 	fmt.Println(count)
+}
+
+func main() {
+	parseData()
+	calculateData()
+	calculateAnswer()
 }
