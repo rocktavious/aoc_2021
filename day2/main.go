@@ -11,6 +11,7 @@ import (
 var (
 	horizontal int
 	vertical   int
+	aim        int
 )
 
 func readFile(path string) ([]string, error) {
@@ -53,10 +54,11 @@ func parseData() {
 		switch data[0][1] {
 		case "forward":
 			horizontal += amount
+			vertical += aim * amount
 		case "down":
-			vertical += amount
+			aim += amount
 		case "up":
-			vertical -= amount
+			aim -= amount
 		}
 	}
 }
