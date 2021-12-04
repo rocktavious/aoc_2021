@@ -4,11 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-)
-
-var (
-	gamma   int
-	epsilon int
+	"strconv"
 )
 
 func readFile(path string) ([]string, error) {
@@ -34,41 +30,50 @@ func readInputData() []string {
 	return lines
 }
 
-func parseData() {
-	data := make(map[int]int, 0)
-	for _, line := range readInputData() {
-		for i, bit := range line {
-			index := len(line) - 1 - i
-			switch bit {
-			case rune('0'):
-				data[index] -= 1
-			case rune('1'):
-				data[index] += 1
-			}
-		}
-	}
-	var result uint = 0
-	var inverse uint = 0
-	for i, count := range data {
-		if count == 0 {
-			panic("is this possible?")
-		}
-		if count > 0 {
-			result |= 1 << (i)
+func runeCommonality(lines []string, i int) (uint8, uint8) {
+	count0, count1 := 0, 0
+	for _, line := range lines {
+		if line[i] == '0' {
+			count0++
 		} else {
-			result |= 0 << (i)
+			count1++
 		}
-		inverse |= 1 << (i)
 	}
-	gamma = int(result)
-	epsilon = int(result ^ inverse)
+	if count0 > count1 {
+		return '0', '1'
+	}
+	return '1', '0'
 }
 
-func calculateAnswer() {
-	fmt.Println(gamma * epsilon)
+func filter(lines []string, i int, mostCommon bool) string {
+	if len(lines) == 1 {
+		return lines[0]
+	}
+	most, least := runeCommonality(lines, i)
+	comparator := least
+	if mostCommon {
+		comparator = most
+	}
+	filtered := make([]string, 0)
+	for _, l := range lines {
+		if l[i] == comparator {
+			filtered = append(filtered, l)
+		}
+	}
+	return filter(filtered, i+1, mostCommon)
+}
+
+func fromBinary(s string) (r int) {
+	i, err := strconv.ParseInt(s, 2, 64)
+	if err != nil {
+		panic(err)
+	}
+	return int(i)
 }
 
 func main() {
-	parseData()
-	calculateAnswer()
+	lines := readInputData()
+	oxygen := filter(lines, 0, true)
+	scrubber := filter(lines, 0, false)
+	fmt.Println(fromBinary(oxygen) * fromBinary(scrubber))
 }
