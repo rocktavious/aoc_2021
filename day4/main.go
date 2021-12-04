@@ -134,11 +134,20 @@ func loadData(lines []string) {
 	}
 }
 
+func areAllBoardsSolved() bool {
+	for _, board := range boards {
+		if board.Solved == false {
+			return false
+		}
+	}
+	return true
+}
+
 func play() {
 	for _, value := range moves {
 		for _, board := range boards {
 			board.Set(value)
-			if board.Solved == true {
+			if areAllBoardsSolved() {
 				calculateAnswer(board, value)
 				return
 			}
