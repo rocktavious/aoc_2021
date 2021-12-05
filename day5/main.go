@@ -48,25 +48,34 @@ type LineSegment struct {
 
 func (s *LineSegment) GetPoints() []Point {
 	var points []Point = make([]Point, 0)
-	if s.one.x == s.two.x {
-		displacement := s.two.y - s.one.y
-		direction := int(math.Copysign(1, float64(displacement)))
-		count := int(math.Abs(float64(displacement)))
-		for i := 0; i <= count; i++ {
+	displacementX := s.two.x - s.one.x
+	displacementY := s.two.y - s.one.y
+	directionX := int(math.Copysign(1, float64(displacementX)))
+	directionY := int(math.Copysign(1, float64(displacementY)))
+	displacementXAbs := int(math.Abs(float64(displacementX)))
+	displacementYAbs := int(math.Abs(float64(displacementY)))
+
+	if s.one.x == s.two.x { // Horizontal
+		for i := 0; i <= displacementYAbs; i++ {
 			points = append(points, Point{
 				x: s.one.x,
-				y: s.one.y + i*direction,
+				y: s.one.y + i*directionY,
 			})
 		}
 	}
-	if s.one.y == s.two.y {
-		displacement := s.two.x - s.one.x
-		direction := int(math.Copysign(-1, float64(displacement)))
-		count := int(math.Abs(float64(displacement)))
-		for i := 0; i <= count; i++ {
+	if s.one.y == s.two.y { // Vertical
+		for i := 0; i <= displacementXAbs; i++ {
 			points = append(points, Point{
-				x: s.one.x + i*direction,
+				x: s.one.x + i*directionX,
 				y: s.one.y,
+			})
+		}
+	}
+	if displacementXAbs == displacementYAbs { // 45 Diagonal
+		for i := 0; i <= displacementXAbs; i++ {
+			points = append(points, Point{
+				x: s.one.x + i*directionX,
+				y: s.one.y + i*directionY,
 			})
 		}
 	}
