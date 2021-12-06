@@ -32,9 +32,9 @@ func readInputData() {
 	}
 	for _, line := range lines {
 		items := strings.Split(line, ",")
-		for _, timer := range items {
-			value := getOrPanicInt(timer)
-			fish = append(fish, value)
+		for _, value := range items {
+			timer := getOrPanicInt(value)
+			fish[timer] += 1
 		}
 	}
 }
@@ -56,31 +56,36 @@ func checkError(err error) {
 var (
 	growthRate    = 6
 	newGrowthRate = 8
-	fish          = make([]int, 0)
+	// Maps a Fish Timer -> Number of Fish
+	fish = make([]int, 9)
 )
 
 func simulate(days int) {
-	//fmt.Printf("Simulate Day %d\n", days)
-	newFish := 0
-	for i, timer := range fish {
-		// Tick
-		fish[i] = timer - 1
-		if timer == 0 {
-			fish[i] = growthRate
-			newFish += 1
+	for i := 0; i < days; i++ {
+		fmt.Printf("Simulate Day %d\n", i)
+		newFish := make([]int, 9)
+		for timer, fishCount := range fish {
+			if timer == 0 {
+				newFish[growthRate] += fishCount
+				newFish[newGrowthRate] += fishCount
+			} else {
+				newFish[timer-1] += fishCount
+			}
 		}
+		fish = newFish
 	}
-	for i := 0; i < newFish; i++ {
-		fish = append(fish, newGrowthRate)
-	}
+}
 
-	if days > 0 {
-		simulate(days - 1)
+func sum(array []int) int {
+	result := 0
+	for _, v := range array {
+		result += v
 	}
+	return result
 }
 
 func main() {
 	readInputData()
-	simulate(79)
-	fmt.Printf("%d", len(fish))
+	simulate(256)
+	fmt.Printf("%d", sum(fish))
 }
