@@ -56,35 +56,29 @@ func checkError(err error) {
 ////////
 
 var (
-	positions      []int
-	targetPosition int
+	positions []int
 )
 
-func calculateMedian(input ...int) int {
-	sort.Ints(input)
-
-	count := len(input)
-	target := count / 2
-
-	if count%2 != 0 {
-		return input[target]
-	}
-
-	return (input[target-1] + input[target]) / 2
-}
-
-func calculateAnswer() {
+func calculateAnswer(targetPosition int) int {
 	total := 0
 	for _, position := range positions {
-		total += int(math.Abs(float64(position) - float64(targetPosition)))
+		steps := int(math.Abs(float64(position) - float64(targetPosition)))
+		for i := 0; i < steps; i++ {
+			total += i + 1
+		}
 	}
-
-	fmt.Printf("%d\n", total)
+	return total
 }
 
 func main() {
 	readInputData()
-
-	targetPosition = calculateMedian(positions...)
-	calculateAnswer()
+	sort.Ints(positions)
+	min := positions[0]
+	max := positions[len(positions)-1]
+	results := make([]int, 0)
+	for i := min; i <= max; i++ {
+		results = append(results, calculateAnswer(i))
+	}
+	sort.Ints(results)
+	fmt.Printf("%d", results[0])
 }
